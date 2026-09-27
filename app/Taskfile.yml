@@ -230,6 +230,14 @@ tasks:
     cmds:
       - rm -f {{.DMG}}
       - create-dmg --volname Trayfinder --window-size 540 360 --icon-size 96 --icon Trayfinder.app 130 180 --hide-extension Trayfinder.app --app-drop-link 410 180 --no-internet-enable {{.DMG}} {{.APP_PATH}}
+      # The app inside is signed by the export; the disk image needs its own Developer ID signature,
+      # or Gatekeeper reports "no usable signature" for the DMG even after notarization.
+      - |
+        id=$(security find-identity -v -p codesigning | grep "Developer ID Application" | grep "($TEAM_ID)" | head -1 | awk '{print $2}')
+        test -n "$id" || { echo "No Developer ID Application certificate for team $TEAM_ID in the keychain"; exit 1; }
+        codesign --force --timestamp --sign "$id" {{.DMG}}
+      - codesign --verify --strict --verbose=1 {{.DMG}}
+      - codesign --verify --deep --strict --verbose=1 {{.APP_PATH}}
 
   notarize:
     desc: Notarize and staple the DMG (needs `task app:notary:setup` once)
