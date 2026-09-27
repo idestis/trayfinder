@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Trayfinder</title>
+    <link>https://idestis.github.io/trayfinder/appcast.xml</link>
+    <description>Updates for Trayfinder.</description>
+    <language>en</language>
+  </channel>
+</rss>

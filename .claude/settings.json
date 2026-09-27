@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(task)",
+      "Bash(task --list)",
+      "Bash(task build)",
+      "Bash(task test)",
+      "Bash(task verify)",
+      "Bash(task fmt)",
+      "Bash(task app:build)",
+      "Bash(task app:test)",
+      "Bash(task app:gen)",
+      "Bash(task app:fmt)",
+      "Bash(task app:fmt:check)",
+      "Bash(task app:verify)",
+      "Bash(task app:version)",
+      "Bash(task app:bump:preview)",
+      "Bash(task app:changelog:preview)",
+      "Bash(task landing:check)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)"
+    ]
+  }
+}

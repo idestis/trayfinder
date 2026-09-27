@@ -1,0 +1,4 @@
+// Copy to Signing.xcconfig (gitignored) or run `task signing:setup` with TEAM_ID in .env.
+// A stable signature keeps the Accessibility permission across rebuilds.
+DEVELOPMENT_TEAM = YOURTEAMID
+CODE_SIGN_IDENTITY = Apple Development

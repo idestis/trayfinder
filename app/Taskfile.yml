@@ -1,0 +1,292 @@
+# Trayfinder for macOS. Run through the root Taskfile (`task app:build`) so .env is loaded.
+#   task app:setup     once: check Xcode, XcodeGen, create-dmg, git-cliff, gh
+#   task app:run       build Debug and launch "Trayfinder Dev"
+#   task app:verify    the gate: format check, build, tests
+#   task app:release   bump from commits, notarized DMG, Sparkle appcast, tag vX.Y.Z, GitHub release
+# Release credentials never live in this repo: TEAM_ID comes from the root .env, the notary
+# password and the Sparkle EdDSA private key live in the login keychain.
+# Extra xcodebuild settings (CI uses ad-hoc signing) come from $XCODEBUILD_FLAGS.
+version: "3"
+
+vars:
+  APP: Trayfinder
+  REPO: idestis/trayfinder
+  PROJECT: Trayfinder.xcodeproj
+  SCHEME: Trayfinder
+  DERIVED: build/DerivedData
+  ARCHIVE_PATH: build/Trayfinder.xcarchive
+  EXPORT_PATH: build/export
+  EXPORT_OPTIONS: build/ExportOptions.plist
+  APP_PATH: build/export/Trayfinder.app
+  DMG: build/Trayfinder.dmg
+  VERSION_FILE: Config/Version.xcconfig
+  SPARKLE_KEY_FILE: Config/Sparkle.xcconfig
+  SIGNING_FILE: Config/Signing.xcconfig
+  APPCAST: ../landing/appcast.xml
+  TAG_PREFIX: v
+  # Tasks run in app/, the git repo and cliff.toml live one level up.
+  CLIFF: git cliff --repository .. --config ../cliff.toml
+  NOTARY_PROFILE: trayfinder-notary
+  DOWNLOAD_BASE: https://github.com/idestis/trayfinder/releases/download
+  MIN_SYSTEM_VERSION: "14.0"
+  # Sparkle CLI tools, fetched by `task sparkle:install`. The EdDSA key lives in the
+  # login keychain under its own account.
+  SPARKLE_VERSION: 2.7.0
+  SPARKLE_BIN: .sparkle/bin
+  SPARKLE_ACCOUNT: trayfinder
+  VERSION:
+    sh: sed -nE 's/^MARKETING_VERSION = ([0-9.]+).*/\1/p' Config/Version.xcconfig 2>/dev/null
+  BUILD:
+    sh: sed -nE 's/^CURRENT_PROJECT_VERSION = ([0-9]+).*/\1/p' Config/Version.xcconfig 2>/dev/null
+
+tasks:
+  default:
+    cmds: [task --list]
+    silent: true
+
+  setup:
+    desc: Check the toolchain (Xcode, XcodeGen, create-dmg, git-cliff, gh)
+    cmds:
+      - xcodebuild -version
+      - for tool in xcodegen create-dmg git-cliff gh; do command -v $tool >/dev/null || { echo "missing $tool; brew install $tool"; exit 1; }; done
+      - echo "Toolchain ready"
+    silent: true
+
+  gen:
+    desc: Generate Trayfinder.xcodeproj from project.yml (runs before every build)
+    cmds:
+      - xcodegen generate --use-cache --cache-path build/.xcodegen --quiet
+
+  open:
+    desc: Generate the project and open it in Xcode
+    deps: [gen]
+    cmds: ["open {{.PROJECT}}"]
+
+  icon:
+    desc: Render AppIcon.appiconset from scripts/make-icon.swift
+    cmds:
+      - swift scripts/make-icon.swift Trayfinder/Resources/Assets.xcassets/AppIcon.appiconset
+
+  # ---------- develop ----------
+  build:
+    desc: Debug build into build/DerivedData
+    deps: [gen]
+    cmds:
+      - xcodebuild -project {{.PROJECT}} -scheme {{.SCHEME}} -configuration Debug -destination "platform=macOS,arch=$(uname -m)" -derivedDataPath {{.DERIVED}} -quiet build $XCODEBUILD_FLAGS
+
+  run:
+    desc: Build Debug and launch Trayfinder Dev
+    deps: [build]
+    cmds:
+      # Wait for the old copy to exit, or `open` just re-activates it as it quits.
+      - pkill -x Trayfinder || true; for i in $(seq 50); do pgrep -x Trayfinder >/dev/null || break; sleep 0.1; done
+      - open {{.DERIVED}}/Build/Products/Debug/Trayfinder.app
+
+  logs:
+    desc: Stream the app's logs
+    cmds:
+      - log stream --level info --predicate 'subsystem == "io.github.idestis.trayfinder"'
+
+  test:
+    desc: Unit tests (Swift Testing; the bundle is not hosted, so it runs without launching the app)
+    deps: [gen]
+    cmds:
+      # xctest directly instead of `xcodebuild test`: no testmanagerd round-trip, which can hang.
+      - xcodebuild -project {{.PROJECT}} -scheme {{.SCHEME}} -destination "platform=macOS,arch=$(uname -m)" -derivedDataPath {{.DERIVED}} -quiet build-for-testing $XCODEBUILD_FLAGS
+      - xcrun xctest {{.DERIVED}}/Build/Products/Debug/TrayfinderTests.xctest 2>&1 | grep -E "✘|passed|failed|error" || true
+      - xcrun xctest {{.DERIVED}}/Build/Products/Debug/TrayfinderTests.xctest >/dev/null 2>&1
+
+  fmt:
+    desc: Format Swift sources
+    cmds:
+      - xcrun swift-format format --in-place --recursive --parallel Trayfinder TrayfinderTests
+
+  fmt:check:
+    desc: Fail if Swift sources are not formatted
+    cmds:
+      - xcrun swift-format lint --strict --recursive --parallel Trayfinder TrayfinderTests
+
+  verify:
+    desc: "The gate for the app: format check, build, tests"
+    cmds:
+      - task: fmt:check
+      - task: build
+      - task: test
+      - echo "app verify passed"
+
+  clean:
+    desc: Remove build output and the generated project
+    cmds:
+      - rm -rf build {{.PROJECT}}
+
+  # ---------- version and changelog ----------
+  version:
+    desc: Print the marketing version and build number
+    cmds:
+      - echo "{{.VERSION}} ({{.BUILD}})"
+    silent: true
+
+  bump:preview:
+    desc: Print the next version git-cliff picks from commits
+    cmds:
+      - |
+        next=$({{.CLIFF}} --bumped-version 2>/dev/null | sed 's/^{{.TAG_PREFIX}}//')
+        echo "current: {{.VERSION}}"
+        echo "next:    ${next:-none}"
+    silent: true
+
+  bump:
+    desc: "Bump the version from commits and the build by one. Usage: task app:bump or task app:bump -- 0.2.0"
+    vars:
+      NEXT:
+        sh: |
+          if [ -n "{{.CLI_ARGS}}" ]; then printf '%s' "{{.CLI_ARGS}}" | sed 's/^{{.TAG_PREFIX}}//'
+          else {{.CLIFF}} --bumped-version 2>/dev/null | sed 's/^{{.TAG_PREFIX}}//'; fi
+    preconditions:
+      - sh: printf '%s' "{{.NEXT}}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'
+        msg: "Could not pick a version from commits. Pass one: task app:bump -- 0.2.0"
+    cmds:
+      - sed -i '' -E 's/^MARKETING_VERSION = .*/MARKETING_VERSION = {{.NEXT}}/; s/^CURRENT_PROJECT_VERSION = .*/CURRENT_PROJECT_VERSION = {{add (atoi .BUILD) 1}}/' {{.VERSION_FILE}}
+      - echo "Bumped to {{.NEXT}} ({{add (atoi .BUILD) 1}})"
+
+  changelog:preview:
+    desc: Preview the next release notes
+    cmds:
+      - "{{.CLIFF}} --unreleased --strip all"
+
+  # ---------- signing and credentials (once per machine) ----------
+  signing:setup:
+    desc: "Once: write Config/Signing.xcconfig (gitignored) from TEAM_ID in .env"
+    preconditions:
+      - sh: test -n "$TEAM_ID"
+        msg: "TEAM_ID is not set. Copy .env.example to .env at the repo root and fill it in."
+    cmds:
+      - |
+        cat > {{.SIGNING_FILE}} <<XCCONFIG
+        // Local signing settings. Generated by task app:signing:setup; gitignored, never commit.
+        DEVELOPMENT_TEAM = $TEAM_ID
+        CODE_SIGN_IDENTITY = Apple Development
+        XCCONFIG
+      - echo "Wrote {{.SIGNING_FILE}}"
+    silent: true
+
+  notary:setup:
+    desc: "Once: store notarization credentials in the keychain (asks for your Apple ID and an app-specific password)"
+    interactive: true
+    preconditions:
+      - sh: test -n "$TEAM_ID"
+        msg: "TEAM_ID is not set. Copy .env.example to .env at the repo root and fill it in."
+    cmds:
+      - xcrun notarytool store-credentials {{.NOTARY_PROFILE}} --team-id "$TEAM_ID"
+
+  sparkle:install:
+    desc: Download the Sparkle CLI tools (sign_update, generate_keys) into .sparkle/
+    status:
+      - test -x {{.SPARKLE_BIN}}/sign_update
+    cmds:
+      - mkdir -p .sparkle
+      - curl -fsSL "https://github.com/sparkle-project/Sparkle/releases/download/{{.SPARKLE_VERSION}}/Sparkle-{{.SPARKLE_VERSION}}.tar.xz" | tar -xJ -C .sparkle
+
+  sparkle:keys:
+    desc: "Once: create the Trayfinder EdDSA key in the keychain and write its public key into Config/Sparkle.xcconfig"
+    deps: [sparkle:install]
+    cmds:
+      - "{{.SPARKLE_BIN}}/generate_keys --account {{.SPARKLE_ACCOUNT}} >/dev/null"
+      - |
+        key=$({{.SPARKLE_BIN}}/generate_keys --account {{.SPARKLE_ACCOUNT}} -p)
+        sed -i '' -E "s|^SPARKLE_PUBLIC_KEY =.*|SPARKLE_PUBLIC_KEY = $key|" {{.SPARKLE_KEY_FILE}}
+        echo "SPARKLE_PUBLIC_KEY = $key written to {{.SPARKLE_KEY_FILE}}; commit it."
+
+  # ---------- sign, notarize, publish ----------
+  archive:
+    desc: Release archive, exported with Developer ID
+    deps: [gen]
+    preconditions:
+      - sh: test -n "$TEAM_ID"
+        msg: "TEAM_ID is not set. Copy .env.example to .env at the repo root and fill it in."
+    cmds:
+      - rm -rf {{.ARCHIVE_PATH}} {{.EXPORT_PATH}}
+      - mkdir -p build
+      - |
+        cat > {{.EXPORT_OPTIONS}} <<PLIST
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+          <key>method</key><string>developer-id</string>
+          <key>signingStyle</key><string>automatic</string>
+          <key>destination</key><string>export</string>
+          <key>teamID</key><string>$TEAM_ID</string>
+        </dict>
+        </plist>
+        PLIST
+        plutil -lint -s {{.EXPORT_OPTIONS}}
+      - xcodebuild -project {{.PROJECT}} -scheme {{.SCHEME}} -configuration Release -destination 'generic/platform=macOS' -archivePath {{.ARCHIVE_PATH}} -allowProvisioningUpdates DEVELOPMENT_TEAM="$TEAM_ID" -quiet archive
+      - xcodebuild -exportArchive -archivePath {{.ARCHIVE_PATH}} -exportOptionsPlist {{.EXPORT_OPTIONS}} -exportPath {{.EXPORT_PATH}} -allowProvisioningUpdates -quiet
+
+  dmg:
+    desc: Wrap the exported app in build/Trayfinder.dmg
+    deps: [archive]
+    cmds:
+      - rm -f {{.DMG}}
+      - create-dmg --volname Trayfinder --window-size 540 360 --icon-size 96 --icon Trayfinder.app 130 180 --hide-extension Trayfinder.app --app-drop-link 410 180 --no-internet-enable {{.DMG}} {{.APP_PATH}}
+
+  notarize:
+    desc: Notarize and staple the DMG (needs `task app:notary:setup` once)
+    preconditions:
+      - sh: test -f {{.DMG}}
+        msg: "No DMG. Run task app:dmg first."
+    cmds:
+      - xcrun notarytool submit {{.DMG}} --keychain-profile {{.NOTARY_PROFILE}} --wait
+      - xcrun stapler staple {{.DMG}}
+      - spctl --assess --type open --context context:primary-signature -v {{.DMG}}
+
+  appcast:
+    desc: EdDSA-sign the DMG and prepend this version to landing/appcast.xml
+    deps: [sparkle:install]
+    preconditions:
+      - sh: grep -qE '^SPARKLE_PUBLIC_KEY = .+' {{.SPARKLE_KEY_FILE}}
+        msg: "No Sparkle key yet. Run task app:sparkle:keys once."
+      - sh: test -f {{.DMG}}
+        msg: "No DMG. Run task app:dmg first."
+      - sh: test -f {{.APPCAST}}
+        msg: "{{.APPCAST}} is missing."
+    cmds:
+      - |
+        sig=$({{.SPARKLE_BIN}}/sign_update --account {{.SPARKLE_ACCOUNT}} {{.DMG}})
+        notes=$(git cliff --repository .. --config scripts/cliff-sparkle.toml --unreleased --tag "{{.TAG_PREFIX}}{{.VERSION}}" 2>/dev/null || true)
+        python3 scripts/prepend_appcast.py --version {{.VERSION}} --build {{.BUILD}} \
+          --url "{{.DOWNLOAD_BASE}}/{{.TAG_PREFIX}}{{.VERSION}}/Trayfinder.dmg" --sig-line "$sig" --notes "$notes" \
+          --min-system-version {{.MIN_SYSTEM_VERSION}} {{.APPCAST}}
+
+  release:
+    desc: "Bump, build, notarize, sign, update appcast, commit, tag vX.Y.Z, push, GitHub release. Pin with: task release -- 0.2.0"
+    preconditions:
+      - sh: test -z "$(git status --porcelain)"
+        msg: Working tree not clean.
+      - sh: test "$(git rev-parse --abbrev-ref HEAD)" = main
+        msg: Release from main.
+      - sh: gh auth status >/dev/null 2>&1
+        msg: Run gh auth login first.
+      - sh: test -n "$TEAM_ID"
+        msg: "TEAM_ID is not set. Copy .env.example to .env at the repo root and fill it in."
+    cmds:
+      - task: bump
+        vars: { CLI_ARGS: "{{.CLI_ARGS}}" }
+      # VERSION was read before the bump, so the rest runs in a fresh task.
+      - task release:publish
+
+  release:publish:
+    desc: Second half of release, after the bump (run by task release)
+    cmds:
+      - "{{.CLIFF}} --tag {{.TAG_PREFIX}}{{.VERSION}} -o ../CHANGELOG.md"
+      - task: dmg
+      - task: notarize
+      - task: appcast
+      - git -C .. add app/{{.VERSION_FILE}} CHANGELOG.md landing/appcast.xml
+      - 'git -C .. commit -m "chore(release): {{.TAG_PREFIX}}{{.VERSION}}"'
+      - git -C .. tag -a {{.TAG_PREFIX}}{{.VERSION}} -m "Trayfinder {{.VERSION}}"
+      # Pushing main redeploys GitHub Pages, which publishes the new appcast.
+      - git -C .. push origin main {{.TAG_PREFIX}}{{.VERSION}}
+      - "{{.CLIFF}} --latest --strip all > build/notes.md"
+      - gh release create {{.TAG_PREFIX}}{{.VERSION}} --repo {{.REPO}} --title "Trayfinder {{.VERSION}}" --notes-file build/notes.md {{.DMG}}

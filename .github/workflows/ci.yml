@@ -1,0 +1,76 @@
+name: CI
+
+# Runs on every PR and push to main. `app` and `landing` are required checks, so they always report:
+# a job skipped because its files didn't change counts as passed.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      app: ${{ steps.diff.outputs.app }}
+      landing: ${{ steps.diff.outputs.landing }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - id: diff
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE" ] || ! git cat-file -e "$BASE" 2>/dev/null || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            files=$(git ls-files)
+          else
+            files=$(git diff --name-only "$BASE" HEAD)
+          fi
+          echo "$files"
+          grep -qE '^(app/|Taskfile.yml|\.swift-format|\.github/workflows/ci.yml)' <<<"$files" && echo "app=true" >> "$GITHUB_OUTPUT" || echo "app=false" >> "$GITHUB_OUTPUT"
+          grep -qE '^(landing/|\.github/workflows/(ci|pages).yml)' <<<"$files" && echo "landing=true" >> "$GITHUB_OUTPUT" || echo "landing=false" >> "$GITHUB_OUTPUT"
+
+  app:
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    # If the macos-26 image is unavailable, fall back to: macos-15
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      # Appended to every xcodebuild call by app:build and app:test: ad-hoc signing, no team or certificates.
+      XCODEBUILD_FLAGS: CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install tools
+        run: brew install go-task xcodegen
+      - name: Xcode version
+        run: xcodebuild -version
+      - name: Generate project
+        run: task app:gen
+      - name: Format check
+        run: task app:fmt:check
+      - name: Build
+        run: task app:build
+      - name: Test
+        run: task app:test
+
+  landing:
+    needs: changes
+    if: needs.changes.outputs.landing == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq libxml2-utils
+          sudo snap install task --classic
+      - name: Landing check
+        run: task landing:check

@@ -1,0 +1,5 @@
+#include "Base.xcconfig"
+
+// Own bundle id and name so a dev build runs next to a release without sharing prefs or permissions.
+PRODUCT_BUNDLE_IDENTIFIER = io.github.idestis.trayfinder.debug
+TRAYFINDER_DISPLAY_NAME = Trayfinder Dev
