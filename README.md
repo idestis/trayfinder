@@ -1,5 +1,10 @@
 # Trayfinder
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/hero-dark.png">
+  <img alt="Trayfinder's dropdown under its menu bar icon, listing icons that are out of sight: Telegram, 1Password, CleanShot X and Rectangle. Favourites Docker and Tailscale sit next to the Trayfinder icon." src=".github/assets/hero-light.png">
+</picture>
+
 A small macOS menu bar utility. It finds any menu bar icon from the keyboard and gets you to it, even when macOS has put it out of sight.
 
 - **Search.** Click the mark or press ⌃⌥T. A dropdown lists the icons that are out of sight, most used first; type to find any icon, press ↵, and its real menu opens.
