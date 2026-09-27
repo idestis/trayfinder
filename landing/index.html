@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trayfinder</title>
+  <meta name="description" content="Trayfinder is a free, open-source Mac utility that finds any menu bar icon by name and opens its menu, even under the notch or behind macOS's overflow arrow.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101114" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://idestis.github.io/trayfinder/">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Trayfinder">
+  <meta property="og:title" content="Trayfinder — every menu bar icon, one keystroke away">
+  <meta property="og:description" content="Find any menu bar icon by name and open it, wherever macOS put it. Keep favourites in sight. Free, open source, no account, no analytics.">
+  <meta property="og:url" content="https://idestis.github.io/trayfinder/">
+  <meta name="twitter:card" content="summary">
+  <script>
+    try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="./" aria-label="Trayfinder home">
+        <img src="logo.svg" alt="" width="28" height="28" class="brand-mark">
+        <span>Trayfinder</span>
+      </a>
+      <nav aria-label="Primary">
+        <ul class="nav">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#privacy">Privacy</a></li>
+          <li><a href="https://github.com/idestis/trayfinder">GitHub</a></li>
+          <li><button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch colour theme" hidden>
+            <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 3a7 7 0 0 1 0 14z" fill="currentColor"/></svg>
+          </button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <h1 id="hero-title">Every menu bar icon, one keystroke away</h1>
+      <p class="lede">Trayfinder finds any menu bar icon by name and opens its real menu, even when it's under the notch or behind macOS's overflow arrow.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="https://github.com/idestis/trayfinder/releases/latest/download/Trayfinder.dmg">
+          <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true"><path d="M10 3v10m0 0-4-4m4 4 4-4M4 16h12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Download for Mac
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/idestis/trayfinder">View on GitHub</a>
+      </div>
+      <p class="fineprint">macOS 14 or later · free and open source</p>
+
+      <figure class="demo" aria-labelledby="demo-caption">
+        <svg class="callouts callouts-wide" viewBox="300 0 540 80" width="540" height="80" aria-hidden="true" focusable="false">
+            <g><text x="555" y="44" text-anchor="end">« macOS overflow: icons that don&#39;t fit</text><path d="M560 40C571 43 576 56 576 72"/><path d="M572.5 71 576 76 579.5 71"/></g>
+            <g><text x="585" y="16" text-anchor="end">Favourites stay next to Trayfinder</text><path d="M590 12C600 14 602 40 602 72"/><path d="M598.5 71 602 76 605.5 71"/></g>
+            <g><text x="660" y="16" text-anchor="start">Trayfinder: ⌃⌥T or click</text><path d="M655 12C645 14 642 40 642 72"/><path d="M638.5 71 642 76 645.5 71"/></g>
+            <g><text x="716" y="44" text-anchor="start">Apple&#39;s system icons</text><path d="M711 40C704 43 702 56 702 72"/><path d="M698.5 71 702 76 705.5 71"/></g>
+        </svg>
+        <svg class="callouts callouts-sm" viewBox="0 0 220 56" width="220" height="56" aria-hidden="true" focusable="false">
+            <g><text x="140" y="16" text-anchor="end">Trayfinder: ⌃⌥T or click</text><path d="M145 12C155 14 159 30 159 48"/><path d="M155.5 47 159 52 162.5 47"/></g>
+        </svg>
+        <div class="desktop" aria-hidden="true">
+          <svg width="0" height="0" class="defs" aria-hidden="true" focusable="false">
+            <defs>
+              <symbol id="g-toggles" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="6" rx="3" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="17.5" cy="8" r="1.8" fill="currentColor"/><rect x="3.5" y="13" width="17" height="6" rx="3" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="6.5" cy="16" r="1.8" fill="currentColor"/></symbol>
+              <symbol id="g-wifi" viewBox="0 0 24 24"><path d="M3.5 9.5a12 12 0 0 1 17 0M6.5 12.7a7.7 7.7 0 0 1 11 0M9.5 15.8a3.4 3.4 0 0 1 5 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="18.8" r="1.4" fill="currentColor"/></symbol>
+              <symbol id="g-tailscale" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="5" cy="5" r="2.4"/><circle cx="12" cy="5" r="2.4"/><circle cx="19" cy="5" r="2.4"/><circle cx="5" cy="12" r="2.4"/><circle cx="12" cy="12" r="2.4"/><circle cx="19" cy="12" r="2.4"/><g opacity=".32"><circle cx="5" cy="19" r="2.4"/><circle cx="12" cy="19" r="2.4"/><circle cx="19" cy="19" r="2.4"/></g></g></symbol>
+              <symbol id="g-docker" viewBox="0 0 24 24"><g fill="currentColor"><path d="M1.8 12h16.6c.5-1.3 1.8-2.1 3.4-1.9-.3 1.3-1.2 2.2-2.4 2.5-1.2 4.6-5.3 7.4-10.1 7.4-4.6 0-7.4-3-7.5-8Z"/><rect x="3.4" y="8.6" width="2.6" height="2.6" rx=".4"/><rect x="6.6" y="8.6" width="2.6" height="2.6" rx=".4"/><rect x="9.8" y="8.6" width="2.6" height="2.6" rx=".4"/><rect x="13" y="8.6" width="2.6" height="2.6" rx=".4"/><rect x="6.6" y="5.4" width="2.6" height="2.6" rx=".4"/><rect x="9.8" y="5.4" width="2.6" height="2.6" rx=".4"/><rect x="13" y="5.4" width="2.6" height="2.6" rx=".4"/><rect x="13" y="2.2" width="2.6" height="2.6" rx=".4"/></g></symbol>
+              <symbol id="g-telegram" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20ZM5.6 11.7l10.9-4.3c.6-.2 1.1.1.9.9l-1.8 8.6c-.1.6-.6.8-1.1.4l-3.1-2.3-1.6 1.6-.1-2.6 4.9-4.6-6.3 3.9-2.7-.8c-.7-.2-.7-.6 0-.8Z"/></symbol>
+              <symbol id="g-pill" viewBox="0 0 24 24"><g transform="rotate(-45 12 12)"><rect x="3.5" y="8.3" width="17" height="7.4" rx="3.7" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 8.3h4.8a3.7 3.7 0 0 1 0 7.4H12Z" fill="currentColor"/></g></symbol>
+              <symbol id="g-cursor" viewBox="0 0 24 24"><path d="M12.5 4.5h5M12.5 19.5h5M15 4.5v15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M4 12h6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".6"/></symbol>
+              <symbol id="g-battery" viewBox="0 0 36 24"><rect x="1.2" y="4.8" width="24.6" height="14.4" rx="4.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M27.8 10v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".55"/><text x="13.5" y="15.9" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, system-ui, sans-serif" font-size="11" font-weight="700" fill="currentColor">80</text><path d="M33.6 4.5 29.8 12.6h2.7l-1.1 6.9 4.1-8.5h-2.8l.9-6.5Z" fill="currentColor"/></symbol>
+              <symbol id="g-overflow" viewBox="0 0 24 24"><path d="m11.5 7-5 5 5 5M18 7l-5 5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+              <symbol id="g-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15 15 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+              <symbol id="g-pin" viewBox="0 0 24 24"><path d="M9 3.5h6l-1 5.5 3.5 3.5v1.5h-11v-1.5L10 9 9 3.5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M12 14v6.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+            </defs>
+          </svg>
+
+          <div class="menubar">
+            <div class="mb-left"><svg class="apple" viewBox="0 0 17 20" aria-hidden="true"><path fill="currentColor" d="M14.1 10.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9C3.8 4.9 2.2 5.9 1.3 7.4-.5 10.6.8 15.3 2.6 17.8c.9 1.2 1.9 2.6 3.2 2.5 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.4.8 1.4 0 2.3-1.2 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.8-1.1-2.9-4.3ZM11.6 3.2c.7-.9 1.2-2 1-3.2-1 .1-2.3.7-3 1.6-.7.8-1.3 2-1.1 3.1 1.2.1 2.3-.6 3.1-1.5Z"/></svg><b>Finder</b><span>File</span><span>Edit</span><span>View</span><span class="hide-sm">Go</span><span class="hide-sm">Window</span></div>
+            <div class="mb-right">
+              <svg class="ico ico-overflow"><use href="#g-overflow"/></svg>
+              <svg class="ico"><use href="#g-tailscale"/></svg>
+              <span class="mark-group is-active"><img src="logo.svg" alt="" width="15" height="15" class="mb-mark"><span class="count">+6</span></span>
+              <svg class="ico hide-sm"><use href="#g-toggles"/></svg>
+              <svg class="ico"><use href="#g-wifi"/></svg>
+              <svg class="ico ico-battery hide-sm"><use href="#g-battery"/></svg>
+              <span class="clock">Sun 09:41</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="search">
+              <svg class="search-ico"><use href="#g-search"/></svg>
+              <span class="placeholder"><span class="caret"></span>Type to find any menu bar icon</span>
+            </div>
+            <div class="section-head"><span class="section-title">Out of sight · 6</span><span>Most used first</span></div>
+            <ul class="results">
+              <li class="selected"><span class="app app-docker"><svg><use href="#g-docker"/></svg></span><span class="item"><span class="name">Docker Desktop</span><span class="sub">Engine running · 4 containers</span></span><kbd>⌘1</kbd><span class="pin" title="Favourite"><svg><use href="#g-pin"/></svg></span></li>
+              <li><span class="app app-telegram"><svg><use href="#g-telegram"/></svg></span><span class="item"><span class="name">Telegram</span><span class="sub">3 unread chats</span></span><kbd>⌘2</kbd><span class="pin" title="Favourite"><svg><use href="#g-pin"/></svg></span></li>
+              <li><span class="app app-amph"><svg><use href="#g-pill"/></svg></span><span class="item"><span class="name">Amphetamine</span><span class="sub">Session active · indefinitely</span></span><kbd>⌘3</kbd><span class="pin" title="Favourite"><svg><use href="#g-pin"/></svg></span></li>
+              <li><span class="app app-cotypist"><svg><use href="#g-cursor"/></svg></span><span class="item"><span class="name">Cotypist</span><span class="sub">Autocomplete on</span></span><kbd>⌘4</kbd><span class="pin" title="Favourite"><svg><use href="#g-pin"/></svg></span></li>
+            </ul>
+            <p class="panel-foot"><kbd>⌘P</kbd> keeps an icon next to Trayfinder.</p>
+          </div>
+        </div>
+        <figcaption id="demo-caption">Click the mark or press <kbd>⌃⌥T</kbd>. Everything out of sight is one keystroke away.</figcaption>
+      </figure>
+    </section>
+
+    <section id="features" class="section wrap" aria-labelledby="features-title">
+      <h2 id="features-title">Find it, reach it, keep it in sight</h2>
+      <ul class="grid">
+        <li class="card">
+          <h3>Find any icon by name</h3>
+          <p>Press <kbd>⌃⌥T</kbd> or click the Trayfinder mark, type part of a name, and press <kbd>↵</kbd> to open that icon's real menu. Icons out of sight are listed first.</p>
+        </li>
+        <li class="card">
+          <h3>Reach hidden icons</h3>
+          <p>Behind macOS's « overflow arrow, Trayfinder expands it and opens the menu in place. Under the notch, it moves the icon next to its mark, opens it, and puts it back shortly after.</p>
+        </li>
+        <li class="card">
+          <h3>Favourites next to Trayfinder</h3>
+          <p>Press <kbd>⌘P</kbd>, or use Settings › Favourites. The icon goes just left of Trayfinder's mark. macOS overflows icons from the left first, so favourites stay in sight, and they rank first in search.</p>
+        </li>
+        <li class="card">
+          <h3>Learns what you use</h3>
+          <p>Results are ranked by how often and how recently you open them. No meters, no noise.</p>
+        </li>
+        <li class="card">
+          <h3>Keyboard all the way</h3>
+          <p>Open the first nine results with <kbd>⌘1</kbd>–<kbd>⌘9</kbd>. Settings work from the keyboard too: <kbd>j</kbd> <kbd>k</kbd> or arrows, <kbd>↵</kbd>, <kbd>h</kbd> to go back. The shortcut is yours to reassign.</p>
+        </li>
+        <li class="card">
+          <h3>Local-first</h3>
+          <p>No account, no analytics. Favourites and usage stay on your Mac. The only network request is the optional update check.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section id="shortcuts" class="section wrap" aria-labelledby="shortcuts-title">
+      <h2 id="shortcuts-title">Keyboard shortcuts</h2>
+      <div class="table-wrap">
+        <table>
+          <caption class="sr-only">Trayfinder keyboard shortcuts</caption>
+          <thead><tr><th scope="col">Keys</th><th scope="col">Action</th></tr></thead>
+          <tbody>
+            <tr><td><kbd>⌃⌥T</kbd></td><td>Open or close Trayfinder under its mark (reassignable)</td></tr>
+            <tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Move the selection</td></tr>
+            <tr><td><kbd>↵</kbd></td><td>Open the selected icon's menu</td></tr>
+            <tr><td><kbd>⌘1</kbd>–<kbd>⌘9</kbd></td><td>Open result 1 to 9</td></tr>
+            <tr><td><kbd>⌘P</kbd></td><td>Add or remove the selected icon as a favourite</td></tr>
+            <tr><td><kbd>⌘ ,</kbd></td><td>Open settings</td></tr>
+            <tr><td><kbd>esc</kbd></td><td>Close</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="macos-27" class="section wrap" aria-labelledby="macos-27-title">
+      <div class="note card">
+        <h2 id="macos-27-title">What macOS 27 changed</h2>
+        <p>In macOS 27 the menu bar is drawn as one window. The tricks older menu bar managers used to hide icons, such as stretching an invisible separator or capturing icon images into a second bar, no longer work there.</p>
+        <p>Apple added its own « overflow arrow for icons that don't fit, and per-app toggles in System Settings › Menu Bar. Trayfinder works with those rather than against them. It doesn't hide icons itself. It gets you to any icon, wherever macOS put it, and keeps your favourites in sight.</p>
+        <p>To remove an icon for good, use the toggles in System Settings › Menu Bar; Trayfinder's settings link straight there. On macOS 14 and 15 Trayfinder works the same way: search, reach and favourites.</p>
+      </div>
+    </section>
+
+    <section id="privacy" class="section wrap" aria-labelledby="privacy-title">
+      <h2 id="privacy-title">What Trayfinder does and doesn't do</h2>
+      <div class="split">
+        <div class="card">
+          <h3>Does</h3>
+          <ul class="list list-yes">
+            <li>Asks for Accessibility permission, and nothing else. It uses it to read the names and positions of menu bar icons, to open their menus when you choose one, and to move icons the way you would with ⌘-drag.</li>
+            <li>Moves an icon only when you make it a favourite, or when it has to reach one under the notch. An icon reached under the notch goes back to its own place after a short delay.</li>
+            <li>Stores favourites, shortcuts and usage counts locally on your Mac.</li>
+            <li>Checks for updates, if you allow it, by reading the <a href="appcast.xml">update feed</a> on this site.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Doesn't</h3>
+          <ul class="list list-no">
+            <li>Hide icons itself. That's what System Settings › Menu Bar is for.</li>
+            <li>Read your screen, keystrokes or the contents of other apps.</li>
+            <li>Require an account, or collect analytics or crash reports.</li>
+            <li>Make any other network request. The source is <a href="https://github.com/idestis/trayfinder">open for anyone to check</a>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="ukraine" class="section wrap" aria-labelledby="ukraine-title">
+      <div class="ukraine card">
+        <span class="flag" aria-hidden="true"></span>
+        <div>
+          <h2 id="ukraine-title">Support Ukraine</h2>
+          <p>Trayfinder is made by a developer from Ukraine. If this app is useful to you, please consider supporting people in Ukraine.</p>
+          <div class="actions actions-left">
+            <a class="btn btn-secondary" href="https://u24.gov.ua/">Donate via United24</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>Trayfinder is released under the <a href="https://github.com/idestis/trayfinder/blob/main/LICENSE">MIT licence</a>.</p>
+      <p>Made by <a href="https://www.linkedin.com/in/dmytroshamenko/">Dmytro Shamenko</a></p>
+      <p><a href="https://github.com/idestis/trayfinder">Source code</a> · <a href="https://github.com/idestis/trayfinder/releases">Releases</a></p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var b = document.getElementById("theme-toggle"), r = document.documentElement;
+      if (!b) return;
+      b.hidden = false;
+      b.addEventListener("click", function () {
+        var cur = r.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        var next = cur === "dark" ? "light" : "dark";
+        r.setAttribute("data-theme", next);
+        try { localStorage.setItem("theme", next); } catch (e) {}
+      });
+    })();
+  </script>
+</body>
+</html>

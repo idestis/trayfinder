@@ -1,0 +1,16 @@
+version: "3"
+
+tasks:
+  dev:
+    desc: Serve the landing page locally at http://localhost:4321
+    cmds:
+      - python3 -m http.server 4321
+
+  check:
+    desc: Validate the appcast and make sure the page loads nothing from other hosts
+    cmds:
+      - xmllint --noout appcast.xml logo.svg favicon.svg
+      - "! grep -nE '(src|href)=\"http://' index.html"
+      - "! grep -nE '<(script|img|iframe)[^>]+src=\"https?://' index.html"
+      - "! grep -nE '<link[^>]+rel=\"(stylesheet|icon|preload)\"[^>]+href=\"https?://' index.html"
+      - "! grep -nE 'url\\(\"?https?:|@import' styles.css"
