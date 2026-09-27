@@ -1,3 +1,3 @@
 // Filled by `task sparkle:keys`. Public key only; the private key stays in the login keychain.
 // Empty key = updates are off in this build.
-SPARKLE_PUBLIC_KEY =
+SPARKLE_PUBLIC_KEY = DISRcYLIQeIaPgJVk2iDPldIIbS5ErMDAbZuv4P/QiQ=
