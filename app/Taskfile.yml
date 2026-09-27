@@ -296,5 +296,5 @@ tasks:
       - git -C .. tag -a {{.TAG_PREFIX}}{{.VERSION}} -m "Trayfinder {{.VERSION}}"
       # Pushing main redeploys GitHub Pages, which publishes the new appcast.
       - git -C .. push origin main {{.TAG_PREFIX}}{{.VERSION}}
-      - "{{.CLIFF}} --latest --strip all > build/notes.md"
+      - git cliff --repository .. --config scripts/cliff-release.toml --latest > build/notes.md
       - gh release create {{.TAG_PREFIX}}{{.VERSION}} --repo {{.REPO}} --title "Trayfinder {{.VERSION}}" --notes-file build/notes.md {{.DMG}}

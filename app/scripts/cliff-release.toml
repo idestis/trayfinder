@@ -1,0 +1,41 @@
+# git-cliff config for the GitHub release notes: written for people downloading the app.
+# Only changes a user can notice (feat, fix, perf outside landing/ci/docs), one line each, no bodies,
+# no scopes, no PR numbers. CHANGELOG.md (../cliff.toml) keeps the full developer history.
+
+[changelog]
+header = """
+**Install:** download `Trayfinder.dmg` below, open it and drag Trayfinder to Applications. \
+Already have it? Trayfinder updates itself.\n
+"""
+body = """
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim }}
+{% for commit in commits %}
+- {{ commit.message | upper_first }}\
+{% endfor %}
+{% endfor %}
+"""
+footer = """
+
+Requires macOS 14 or later. [Full changelog](https://github.com/idestis/trayfinder/blob/main/CHANGELOG.md)
+"""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+protect_breaking_commits = false
+filter_commits = true
+tag_pattern = "^v[0-9].*"
+sort_commits = "oldest"
+commit_preprocessors = [
+  # Squash merges end in "(#12)"; users don't need PR numbers.
+  { pattern = '\s*\(#[0-9]+\)', replace = "" },
+]
+commit_parsers = [
+  { message = "^[a-z]+\\((landing|ci|docs|release|deps)\\)", skip = true },
+  { message = "^feat", group = "<!-- 0 -->New" },
+  { message = "^fix", group = "<!-- 1 -->Fixed" },
+  { message = "^perf", group = "<!-- 2 -->Faster" },
+]

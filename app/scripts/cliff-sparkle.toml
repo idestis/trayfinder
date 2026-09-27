@@ -10,7 +10,7 @@ body = """
 <h3>{{ group | upper_first }}</h3>
 <ul>
 {% for commit in commits -%}
-<li>{% if commit.scope %}<strong>{{ commit.scope }}:</strong> {% endif %}{{ commit.message | upper_first }}</li>
+<li>{{ commit.message | upper_first }}</li>
 {% endfor -%}
 </ul>
 {% endfor %}
@@ -23,25 +23,21 @@ conventional_commits = true
 filter_unconventional = true
 split_commits = false
 protect_breaking_commits = false
-filter_commits = false
+filter_commits = true
 tag_pattern = "^v[0-9].*"
 skip_tags = ""
 ignore_tags = ""
 sort_commits = "oldest"
 topo_order = false
 
-# Skip release chores so they never appear in the in-app updater.
+commit_preprocessors = [
+  { pattern = '\s*\(#[0-9]+\)', replace = "" },
+]
+
+# Only what a user notices, same as the GitHub release notes (cliff-release.toml).
 commit_parsers = [
-    { message = "^chore\\(release\\)", skip = true },
-    { message = "^feat", group = "Features" },
-    { message = "^fix", group = "Bug Fixes" },
-    { message = "^perf", group = "Performance" },
-    { message = "^refactor", group = "Refactor" },
-    { message = "^docs", group = "Documentation" },
-    { message = "^style", group = "Style" },
-    { message = "^test", group = "Tests" },
-    { message = "^ci", group = "CI" },
-    { message = "^build", group = "Build" },
-    { message = "^chore", group = "Chore" },
-    { message = "^revert", group = "Reverts" },
+    { message = "^[a-z]+\\((landing|ci|docs|release|deps)\\)", skip = true },
+    { message = "^feat", group = "New" },
+    { message = "^fix", group = "Fixed" },
+    { message = "^perf", group = "Faster" },
 ]
