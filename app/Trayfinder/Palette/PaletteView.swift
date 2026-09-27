@@ -18,7 +18,7 @@ struct PaletteView: View {
   static func height(rows: Int) -> CGFloat {
     let n = CGFloat(max(rows, 1))
     let list = n * rowHeight + (n - 1) * rowSpacing
-    return pad + fieldHeight + 6 + headerHeight + list + footerHeight + pad
+    return pad + fieldHeight + 6 + headerHeight + list + 7 + footerHeight + pad  // 7: divider and its gap
   }
 
   var body: some View {
@@ -35,6 +35,7 @@ struct PaletteView: View {
         }
         if model.results.isEmpty { empty }
       }
+      Divider().opacity(0.6).padding(.horizontal, 10).padding(.top, 6)
       Text(model.footer)
         .font(.system(size: 12)).foregroundStyle(.secondary)
         .lineLimit(2)
