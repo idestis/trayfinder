@@ -14,10 +14,10 @@ jobs:
   label:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/labeler@v5
+      - uses: actions/labeler@v7
         with:
           sync-labels: true
-      - uses: actions/github-script@v7
+      - uses: actions/github-script@v9
         env:
           TITLE: ${{ github.event.pull_request.title }}
         with:
