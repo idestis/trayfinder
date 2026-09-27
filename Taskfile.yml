@@ -1,0 +1,50 @@
+# Trayfinder. This is the only entry point humans, CI and agents should use.
+#   task run       build Debug and launch "Trayfinder Dev"
+#   task verify    the gate: format check, build, tests, landing check
+#   task release   bump from commits, notarized DMG, Sparkle appcast, tag vX.Y.Z, GitHub release
+# Local, never-committed settings (TEAM_ID) live in .env; see .env.example.
+version: "3"
+
+dotenv: [".env"]
+
+includes:
+  app:
+    taskfile: ./app/Taskfile.yml
+    dir: ./app
+  landing:
+    taskfile: ./landing/Taskfile.yml
+    dir: ./landing
+    optional: true
+
+tasks:
+  default:
+    cmds: [task --list]
+    silent: true
+
+  run:
+    desc: Build Debug and launch Trayfinder Dev
+    cmds: [task: app:run]
+
+  build:
+    desc: Debug build of the app
+    cmds: [task: app:build]
+
+  test:
+    desc: App unit tests
+    cmds: [task: app:test]
+
+  fmt:
+    desc: Format Swift sources
+    cmds: [task: app:fmt]
+
+  verify:
+    desc: "The gate: app format check, build, tests, then landing check"
+    cmds:
+      - task: app:verify
+      - task: landing:check
+
+  release:
+    desc: "Cut a release (see app:release). Pin a version with: task release -- 0.2.0"
+    cmds:
+      - task: app:release
+        vars: { CLI_ARGS: "{{.CLI_ARGS}}" }

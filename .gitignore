@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+
+# Local secrets and signing (see .env.example, app/Config/Signing.example.xcconfig)
+.env
+.env.*
+!.env.example
+app/Config/Signing.xcconfig
+
+# Build output
+app/build/
+app/.sparkle/
+app/Trayfinder.xcodeproj/
+xcuserdata/
+*.xcuserstate
+.swiftpm/
+.task/
+
+# Editors and agents
+.idea/
+.vscode/*
+.claude/settings.local.json
+.playwright-mcp/
