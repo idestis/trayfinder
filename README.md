@@ -5,6 +5,12 @@
   <img alt="Trayfinder's dropdown under its menu bar icon, listing icons that are out of sight: Telegram, 1Password, CleanShot X and Rectangle. Favourites Docker and Tailscale sit next to the Trayfinder icon." src=".github/assets/hero-light.png">
 </picture>
 
+<p align="center">
+  <a href="https://idestis.github.io/trayfinder/"><b>Website</b></a> ·
+  <a href="https://github.com/idestis/trayfinder/releases/latest/download/Trayfinder.dmg"><b>Download for Mac</b></a> ·
+  <a href="https://github.com/idestis/trayfinder/releases">Releases</a>
+</p>
+
 A small macOS menu bar utility. It finds any menu bar icon from the keyboard and gets you to it, even when macOS has put it out of sight.
 
 - **Search.** Click the mark or press ⌃⌥T. A dropdown lists the icons that are out of sight, most used first; type to find any icon, press ↵, and its real menu opens.
@@ -17,7 +23,7 @@ A small macOS menu bar utility. It finds any menu bar icon from the keyboard and
 
 macOS 27 draws the menu bar as a single window, so the tricks older menu bar managers used to hide icons no longer work. Apple added its own « overflow arrow and per-app toggles in System Settings › Menu Bar. Trayfinder works with those instead of against them: it doesn't hide icons itself; it gets you to any icon, wherever macOS put it.
 
-Free and open source under the [MIT licence](LICENSE). macOS 14 or later. Landing page: <https://idestis.github.io/trayfinder/>.
+Free and open source under the [MIT licence](LICENSE). macOS 14 or later.
 
 ## Permissions
 
