@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       # Area labels from changed paths (.github/labeler.yml). Runs on the base branch's config only.
-      - uses: actions/labeler@v5
+      - uses: actions/labeler@v7
         with:
           sync-labels: true
       # Type label from the title prefix.
