@@ -7,7 +7,7 @@ landing:
       - any-glob-to-any-file: ["landing/**"]
 ci:
   - changed-files:
-      - any-glob-to-any-file: [".github/**", "Taskfile.yml", "app/Taskfile.yml", "landing/Taskfile.yml"]
+      - any-glob-to-any-file: [".github/workflows/**", ".github/*.yml", "Taskfile.yml", "app/Taskfile.yml", "landing/Taskfile.yml"]
 docs:
   - changed-files:
-      - any-glob-to-any-file: ["**/*.md", "LICENSE"]
+      - any-glob-to-any-file: ["**/*.md", "LICENSE", ".github/assets/**"]
