@@ -58,4 +58,4 @@ Trayfinder is made by a Ukrainian developer. If it saves you time, please consid
 
 ## Credits
 
-Made by [Dmytro Shamenko](https://www.linkedin.com/in/dmytroshamenko/).
+Made by [Dmytro Shamenko](https://www.linkedin.com/in/dmytroshamenko/). If Trayfinder is useful to you, you can [support its development on Ko-fi](https://ko-fi.com/dmytroshamenko).
