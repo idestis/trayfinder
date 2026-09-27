@@ -9,7 +9,7 @@ tasks:
   check:
     desc: Validate the appcast and make sure the page loads nothing from other hosts
     cmds:
-      - xmllint --noout appcast.xml logo.svg favicon.svg
+      - xmllint --noout appcast.xml sitemap.xml logo.svg favicon.svg
       - "! grep -nE '(src|href)=\"http://' index.html"
       - "! grep -nE '<(script|img|iframe)[^>]+src=\"https?://' index.html"
       - "! grep -nE '<link[^>]+rel=\"(stylesheet|icon|preload)\"[^>]+href=\"https?://' index.html"
