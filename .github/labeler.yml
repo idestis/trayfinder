@@ -1,0 +1,13 @@
+# Area labels for PRs, by changed paths (actions/labeler v5).
+app:
+  - changed-files:
+      - any-glob-to-any-file: ["app/**"]
+landing:
+  - changed-files:
+      - any-glob-to-any-file: ["landing/**"]
+ci:
+  - changed-files:
+      - any-glob-to-any-file: [".github/**", "Taskfile.yml", "app/Taskfile.yml", "landing/Taskfile.yml"]
+docs:
+  - changed-files:
+      - any-glob-to-any-file: ["**/*.md", "LICENSE"]
