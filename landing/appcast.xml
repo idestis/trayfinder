@@ -6,6 +6,20 @@
     <description>Updates for Trayfinder.</description>
     <language>en</language>
     <item>
+      <title>0.1.1</title>
+      <pubDate>Mon, 28 Sep 2026 07:24:34 +0000</pubDate>
+      <sparkle:version>3</sparkle:version>
+      <sparkle:shortVersionString>0.1.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <description><![CDATA[
+<h3>Fixed</h3>
+<ul>
+<li>Soft shadow that isn't cut off at the edges</li>
+</ul>
+]]></description>
+      <enclosure url="https://github.com/idestis/trayfinder/releases/download/v0.1.1/Trayfinder.dmg" sparkle:edSignature="ES97ucawPhYP6OPRaK6r/xGzPqIIb+jPRae1N1k6hca1WKI+N17JBFUVOnmDEGC9iHPe13uDFAVX5cGL+0RkDw==" length="1526007" type="application/x-apple-diskimage"/>
+    </item>
+    <item>
       <title>0.1.0</title>
       <pubDate>Sun, 27 Sep 2026 16:28:33 +0000</pubDate>
       <sparkle:version>2</sparkle:version>
