@@ -16,13 +16,18 @@ extension View {
 
 /// Transparent room around a panel for its SwiftUI shadow. The window server's own shadow follows the
 /// square window bounds and shows as a grey frame around rounded glass, so panels turn it off.
+/// The margin must hold the whole blur (about twice the radius) plus the offset, or the window clips it.
 enum PanelShadow {
-  static let margin: CGFloat = 28
+  static let margin: CGFloat = 56
 }
 
 extension View {
+  /// A tight contact shadow for the edge and a wide, faint one for lift, like a system menu.
   func panelShadow() -> some View {
-    self.shadow(color: .black.opacity(0.22), radius: 18, y: 8).padding(PanelShadow.margin)
+    self
+      .shadow(color: .black.opacity(0.10), radius: 1, y: 0.5)
+      .shadow(color: .black.opacity(0.14), radius: 20, y: 10)
+      .padding(PanelShadow.margin)
   }
 }
 
