@@ -1,6 +1,6 @@
 import AppKit
 
-/// Moves a menu bar item by simulating the ⌘-drag macOS supports for rearranging.
+/// Moves a menu bar item by simulating the ⌘-drag macOS supports for rearranging, or clicks one.
 /// Needs Accessibility, which Trayfinder already has. The cursor returns to where it was.
 nonisolated enum ItemMover {
   /// Drags from `from` to `to` (global, top-left origin).
@@ -46,6 +46,28 @@ nonisolated enum ItemMover {
     mouse(.leftMouseUp, to)
     usleep(40_000)
     key(false)
+    usleep(40_000)
+  }
+
+  /// A plain left click at `point`, for items that don't take AXPress (the « overflow arrow). The cursor returns.
+  static func click(at point: CGPoint) {
+    let source = CGEventSource(stateID: .privateState)
+    let restore = CGEvent(source: nil)?.location
+    defer { if let restore { CGWarpMouseCursorPosition(restore) } }
+
+    func mouse(_ type: CGEventType) {
+      guard let e = CGEvent(mouseEventSource: source, mouseType: type, mouseCursorPosition: point, mouseButton: .left)
+      else { return }
+      e.flags = []
+      if type != .mouseMoved { e.setIntegerValueField(.mouseEventClickState, value: 1) }
+      e.post(tap: .cghidEventTap)
+    }
+
+    mouse(.mouseMoved)
+    usleep(30_000)
+    mouse(.leftMouseDown)
+    usleep(40_000)
+    mouse(.leftMouseUp)
     usleep(40_000)
   }
 }
