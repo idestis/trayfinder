@@ -96,11 +96,13 @@ final class TrayModel {
     updateCount()
   }
 
-  /// The « arrow is a narrow MenuBarAgent item left of every visible app icon.
+  /// The « arrow is a narrow MenuBarAgent item left of every visible app icon; with none visible, the leftmost one.
   private static func findOverflowArrow(system: [MenuBarItem], apps: [MenuBarItem]) -> MenuBarItem? {
-    let leftmost = apps.filter { Reach.of($0.frame, notch: nil) == .visible }.map(\.frame.minX).min() ?? .infinity
-    return system.filter { $0.frame.width > 0 && $0.frame.width < 30 && $0.frame.maxX <= leftmost + 2 }
-      .max { $0.frame.minX < $1.frame.minX }
+    let narrow = system.filter { $0.frame.width > 0 && $0.frame.width < 30 }
+    guard let leftmost = apps.filter({ Reach.of($0.frame, notch: nil) == .visible }).map(\.frame.minX).min() else {
+      return narrow.min { $0.frame.minX < $1.frame.minX }
+    }
+    return narrow.filter { $0.frame.maxX <= leftmost + 2 }.max { $0.frame.minX < $1.frame.minX }
   }
 
   /// Granted, yet nothing readable: the grant hasn't reached this process (or the build changed). Restart fixes it.
@@ -216,7 +218,7 @@ final class TrayModel {
 
   private func openFromOverflow(_ item: MenuBarItem) async {
     if let arrow = overflowArrow {
-      press(arrow)
+      await toggle(arrow)
       try? await Task.sleep(for: .milliseconds(350))
       await refresh()
       if let fresh = items.first(where: { $0.id == item.id }), reach(fresh) == .visible {
@@ -224,9 +226,22 @@ final class TrayModel {
         return
       }
       log.info("overflow arrow didn't reveal \(item.id, privacy: .public); pressing it where it is")
+      // Close the expanded arrow again, or it swallows the menu about to open.
+      await toggle(arrow)
+      try? await Task.sleep(for: .milliseconds(150))
+    } else {
+      log.info("no overflow arrow found for \(item.id, privacy: .public); pressing it where it is")
     }
     // Still works; the menu just opens at the screen's corner instead of under the icon.
     press(item)
+  }
+
+  /// MenuBarAgent's items (the « arrow among them) don't take AXPress, so click the arrow like a person would.
+  private func toggle(_ arrow: MenuBarItem) async {
+    let point = CGPoint(x: arrow.frame.midX, y: arrow.frame.midY)
+    await Task.detached(priority: .userInitiated) {
+      if !MenuBarScanner.press(arrow) { ItemMover.click(at: point) }
+    }.value
   }
 
   /// Moves an item from under the notch to just left of the mark and opens it there.
